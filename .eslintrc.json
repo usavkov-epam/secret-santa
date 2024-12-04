@@ -1,0 +1,126 @@
+{
+  "root": true,
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+  ],
+  "ignorePatterns": ["node_modules", "src/__generated__", "build", "coverage"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": "./tsconfig.json",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["@typescript-eslint", "eslint-plugin-import", "unused-imports", "import"],
+  "rules": {
+    "@next/next/no-img-element": "off",
+    "@typescript-eslint/array-type": [
+      "error",
+      {
+        "default": "array-simple"
+      }
+    ],
+    "@typescript-eslint/consistent-return": "warn",
+    "@typescript-eslint/no-empty-function": [
+      "warn",
+      {
+        "allow": ["arrowFunctions"]
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-implied-eval": "error",
+    "@typescript-eslint/no-mixed-enums": "error",
+    "@typescript-eslint/no-useless-constructor": "error",
+    "@typescript-eslint/only-throw-error": "error",
+    "@typescript-eslint/prefer-enum-initializers": "warn",
+    "@typescript-eslint/prefer-for-of": "error",
+    "@typescript-eslint/return-await": "error",
+    "@typescript-eslint/unified-signatures": "error",
+    "complexity": [
+      "warn",
+      {
+        "max": 5
+      }
+    ],
+    "consistent-return": "off",
+    "import/no-unresolved": "error",
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "groups": ["external", "internal"],
+        "newlines-between": "always",
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@/**",
+            "group": "internal",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"]
+      }
+    ],
+    "max-depth": ["warn", 2],
+    "max-lines": ["warn", 200],
+    "max-nested-callbacks": ["warn", 3],
+    "max-params": ["warn", 3],
+    "max-statements-per-line": [
+      "warn",
+      {
+        "max": 1
+      }
+    ],
+    "newline-before-return": "error",
+    "no-case-declarations": "warn",
+    "no-else-return": "error",
+    "no-magic-numbers": [
+      "warn",
+      {
+        "detectObjects": false,
+        "enforceConst": true,
+        "ignore": [-1, 0, 1, 2, 10, 100],
+        "ignoreArrayIndexes": true
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 1
+      }
+    ],
+    "no-nested-ternary": "error",
+    "no-return-await": "off",
+    "no-throw-literal": "off",
+    "no-unneeded-ternary": "error",
+    "no-warning-comments": "warn",
+    "one-var-declaration-per-line": ["warn", "always"],
+    "react/display-name": "warn",
+    "react/sort-comp": "warn",
+    "sort-keys": "warn",
+    "unused-imports/no-unused-imports": "error"
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json"
+      }
+    }
+  }
+}
