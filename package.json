@@ -2,8 +2,9 @@
   "name": "secret-santa",
   "version": "0.1.0",
   "description": "Telegram bot for Secret Santa events",
-  "main": "src/index.ts",
+  "main": "src/main.ts",
   "scripts": {
+    "dev": "nodemon --exec ts-node src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -13,11 +14,11 @@
   "keywords": [
     "secret",
     "santa",
+    "secret-santa",
     "new",
     "year",
+    "new-year",
     "christmas",
-    "secret",
-    "santa",
     "gifts"
   ],
   "author": "Yury Saukou <yury.saukou@gmail.com>",
@@ -27,6 +28,12 @@
   },
   "homepage": "https://github.com/usavkov-epam/secret-santa#readme",
   "dependencies": {
+    "dotenv": "^16.4.7",
+    "mongoose": "^8.8.3",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.16",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
@@ -38,6 +45,7 @@
     "eslint-plugin-jest": "^28.9.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5"
