@@ -1,11 +1,13 @@
 import { Telegraf } from 'telegraf';
 
 import { registerAdminCommands } from './admin';
-import { registerUserCommands } from './user';
+import { registerMemberCommands } from './member';
+import { registerInfoCommands } from './info';
 
 const registerCommands = (bot: Telegraf) => {
   registerAdminCommands(bot);
-  registerUserCommands(bot);
+  registerMemberCommands(bot);
+  registerInfoCommands(bot);
 };
 
 export default registerCommands;

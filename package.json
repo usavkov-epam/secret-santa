@@ -30,7 +30,8 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "mongoose": "^8.8.3",
-    "telegraf": "^4.16.3"
+    "telegraf": "^4.16.3",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@types/mongoose": "^5.11.97",

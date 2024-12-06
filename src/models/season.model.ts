@@ -1,10 +1,33 @@
 import mongoose from 'mongoose';
-import { ParticipantSchema } from './participant.model';
 
-const SeasonSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  participants: [ParticipantSchema],
-  createdAt: { type: Date, default: Date.now },
-});
+import type { SeasonDocument } from '../db';
 
-export const Season = mongoose.model('Season', SeasonSchema);
+import { SeasonStatus } from '../enums';
+
+const SeasonSchema = new mongoose.Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    status: {
+      type: String,
+      enum: [
+        SeasonStatus.NotStarted,
+        SeasonStatus.Active,
+        SeasonStatus.Ended,
+      ],
+      default: SeasonStatus.NotStarted,
+    },
+    endDate: { type: Date },
+  },
+  { timestamps: true },
+);
+
+export const Season = mongoose.model<SeasonDocument>('Season', SeasonSchema);
