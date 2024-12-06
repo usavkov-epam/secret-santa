@@ -10,10 +10,11 @@ export const joinHandler = async (ctx: Context) => {
     const participant = await participantService.joinCurrentSeason({
       telegramId: ctx.from?.id,
       username: ctx.from?.username,
+      fullName: `${ctx.from?.first_name} ${ctx.from?.last_name}`.trim(),
     });
-    ctx.reply(`You have successfully joined the season as "${participant.username}".`);
+    ctx.reply(`✔️ You have successfully joined the season as "${participant.fullName} (${participant.username})".`);
   } catch (error) {
-    ctx.reply(`Error: ${(error as Error).message}`);
+    ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
 
@@ -22,14 +23,14 @@ export const joinHandler = async (ctx: Context) => {
  */
 export const leaveHandler = async (ctx: Context) => {
   if (!ctx.from?.username) {
-    return ctx.reply('Could not find your username.');
+    return ctx.reply('❌ Could not find your username.');
   }
 
   try {
     await participantService.leaveCurrentSeason(ctx.from?.username);
-    ctx.reply('You have successfully left the current season.');
+    ctx.reply('✔️ You have successfully left the current season.');
   } catch (error) {
-    ctx.reply(`Error: ${(error as Error).message}`);
+    ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
 
@@ -38,7 +39,7 @@ export const leaveHandler = async (ctx: Context) => {
  */
 export const myRecipientHandler = async (ctx: Context) => {
   if (!ctx.from?.username) {
-    return ctx.reply('Could not find your username.');
+    return ctx.reply('❌ Could not find your username.');
   }
 
   try {
@@ -46,6 +47,6 @@ export const myRecipientHandler = async (ctx: Context) => {
 
     ctx.reply(`You should give a gift to "${recipient.username}".`);
   } catch (error) {
-    ctx.reply(`Error: ${(error as Error).message}`);
+    ctx.reply(`❌ ${(error as Error).message}`);
   }
 };

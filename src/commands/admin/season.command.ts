@@ -20,7 +20,7 @@ export const createSeasonHandler = async (ctx: Context) => {
       const args = message.text.split(' ').slice(1);
 
       if (args.length === 0) {
-        ctx.reply('Please provide a name for the season. Example: /launch Christmas2024');
+        ctx.reply('❌ Please provide a name for the season. Example: /launch Christmas2024');
         return;
       }
 
@@ -28,15 +28,15 @@ export const createSeasonHandler = async (ctx: Context) => {
       const endDate = args[1] ? new Date(args[1]) : undefined;
 
       const newSeason = await seasonService.createSeason(seasonName, endDate);
-      ctx.reply(`Season "${newSeason.name}" has been successfully created!`);
+      ctx.reply(`✔️ Season "${newSeason.name}" has been successfully created!`);
     } else {
-      ctx.reply('This message does not contain valid text.');
+      ctx.reply('❌ This message does not contain valid text.');
     }
   } catch (error) {
     if (error instanceof Error) {
-      ctx.reply(`Failed to start a new season: ${error.message}`);
+      ctx.reply(`❌ Failed to start a new season: ${error.message}`);
     } else {
-      ctx.reply('An unknown error occurred.');
+      ctx.reply('❌ An unknown error occurred.');
     }
   }
 };
@@ -47,18 +47,18 @@ export const launchSeasonHandler = async (ctx: Context) => {
   }
 
   if (!ctx.message || !('text' in ctx.message)) {
-    return ctx.reply('This message does not contain valid text.');
+    return ctx.reply('❌ This message does not contain valid text.');
   }
 
   const seasonName = ctx.message.text.split(' ').slice(1).join(' ');
 
   if (!seasonName) {
-    return ctx.reply('Please provide a name for the season. Example: /launch_season Christmas2024');
+    return ctx.reply('❌ Please provide a name for the season. Example: /launch_season Christmas2024');
   }
 
   await seasonService.startSeason(seasonName);
 
-  ctx.reply(`Season "${seasonName}" has been successfully launched!`);
+  ctx.reply(`✔️ Season "${seasonName}" has been successfully launched!`);
 }
 
 /**
@@ -71,9 +71,9 @@ export const endSeasonHandler = async (ctx: Context) => {
 
   try {
     const season = await seasonService.endCurrentSeason();
-    ctx.reply(`Season "${season.name}" ended successfully!`);
+    ctx.reply(`✔️ Season "${season.name}" ended successfully!`);
   } catch (error) {
-    ctx.reply(`Error: ${(error as Error).message}`);
+    ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
 
@@ -100,6 +100,6 @@ export const listSeasonsHandler = async (ctx: Context) => {
 
     ctx.reply(`Seasons:\n${list}`);
   } catch (error) {
-    ctx.reply(`Error: ${(error as Error).message}`);
+    ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
