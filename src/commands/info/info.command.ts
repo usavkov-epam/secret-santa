@@ -8,15 +8,15 @@ import { seasonService } from '../../services';
 export const helpHandler = (ctx: Context) => {
   ctx.reply(`
     Available commands:
-    /launch <name> <endDate> - Start a new season (admin)
-    /endseason - End the current season (admin)
-    /addparticipant <username> - Add a participant (admin)
-    /removeparticipant <username> - Remove a participant (admin)
-    /listparticipants - List all participants (admin)
-    /listseasons - List all seasons (admin)
+    /launch_season <name> <endDate> - Start a new season (admin)
+    /end_season - End the current season (admin)
+    /add_participant <username> - Add a participant (admin)
+    /remove_participant <username> - Remove a participant (admin)
+    /list_participants - List all participants (admin)
+    /list_seasons - List all seasons (admin)
     /join - Join the current season
     /leave - Leave the current season
-    /myrecipient - See your recipient
+    /recipient - See your recipient
     /help - Show this help message
     /status - Show current season status
   `);

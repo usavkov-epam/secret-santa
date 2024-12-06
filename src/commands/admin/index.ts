@@ -6,16 +6,18 @@ import {
   listParticipantsHandler,
 } from './participant.command';
 import {
-  startSeasonHandler,
+  createSeasonHandler,
   endSeasonHandler,
+  launchSeasonHandler,
   listSeasonsHandler,
 } from './season.command';
 
 export const registerAdminCommands = (bot: Telegraf) => {
-  bot.command('launch', startSeasonHandler);
-  bot.command('endseason', endSeasonHandler);
-  bot.command('addparticipant', addParticipantHandler);
-  bot.command('removeparticipant', removeParticipantHandler);
-  bot.command('listparticipants', listParticipantsHandler);
-  bot.command('listseasons', listSeasonsHandler);
+  bot.command('launch_season', launchSeasonHandler);
+  bot.command('create_season', createSeasonHandler);
+  bot.command('end_season', endSeasonHandler);
+  bot.command('add_participant', addParticipantHandler);
+  bot.command('remove_participant', removeParticipantHandler);
+  bot.command('list_participants', listParticipantsHandler);
+  bot.command('list_seasons', listSeasonsHandler);
 };

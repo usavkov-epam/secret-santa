@@ -43,6 +43,7 @@ export const myRecipientHandler = async (ctx: Context) => {
 
   try {
     const recipient = await participantService.getRecipient(ctx.from?.username);
+
     ctx.reply(`You should give a gift to "${recipient.username}".`);
   } catch (error) {
     ctx.reply(`Error: ${(error as Error).message}`);

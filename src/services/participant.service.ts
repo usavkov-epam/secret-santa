@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { TelegramUser } from '../types';
 
 import { Participant } from '../db';
+import { SeasonStatus } from '../enums';
 import {
   Season as SeasonModel,
   Participant as ParticipantModel,
@@ -13,7 +14,7 @@ class ParticipantService {
    * Adds a participant to the current active season.
    */
   async addParticipantToCurrentSeason(data: Pick<Participant, 'username'>): Promise<Participant> {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');
@@ -44,7 +45,7 @@ class ParticipantService {
    * @param username - The username of the participant.
    */
   async removeParticipantFromCurrentSeason(username: string): Promise<void> {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');
@@ -66,7 +67,7 @@ class ParticipantService {
    * Gets all participants of the current active season.
    */
   async getParticipantsForCurrentSeason() {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');
@@ -81,7 +82,7 @@ class ParticipantService {
    * Adds the current user to the current season.
    */
   async joinCurrentSeason(telegramUser: TelegramUser) {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');
@@ -112,7 +113,7 @@ class ParticipantService {
    * @param username - Telegram username.
    */
   async leaveCurrentSeason(username: string): Promise<void> {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');
@@ -127,6 +128,10 @@ class ParticipantService {
       throw new Error('You are not part of the current season.');
     }
 
+    if (participant.recipient) {
+      throw new Error('You cannot leave the season after the recipient assignment has been completed.');
+    }
+
     await participant.deleteOne();
   }
 
@@ -135,7 +140,7 @@ class ParticipantService {
    * @param username - Telegram username.
    */
   async getRecipient(username: string) {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');

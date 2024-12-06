@@ -2,12 +2,13 @@ import { Context } from 'telegraf';
 
 import { seasonService } from '../../services';
 import { isAdmin } from '../../utils';
+import { SeasonStatus } from '../../enums';
 
 /**
  * Handler for the /launch command.
  * Only accessible by admins.
  */
-export const startSeasonHandler = async (ctx: Context) => {
+export const createSeasonHandler = async (ctx: Context) => {
   if (!isAdmin(ctx.from?.id)) {
     return ctx.reply('❌ You do not have permission to execute this command.');
   }
@@ -40,6 +41,26 @@ export const startSeasonHandler = async (ctx: Context) => {
   }
 };
 
+export const launchSeasonHandler = async (ctx: Context) => {
+  if (!isAdmin(ctx.from?.id)) {
+    return ctx.reply('❌ You do not have permission to execute this command.');
+  }
+
+  if (!ctx.message || !('text' in ctx.message)) {
+    return ctx.reply('This message does not contain valid text.');
+  }
+
+  const seasonName = ctx.message.text.split(' ').slice(1).join(' ');
+
+  if (!seasonName) {
+    return ctx.reply('Please provide a name for the season. Example: /launch_season Christmas2024');
+  }
+
+  await seasonService.startSeason(seasonName);
+
+  ctx.reply(`Season "${seasonName}" has been successfully launched!`);
+}
+
 /**
  * Ends the current season.
  */
@@ -71,7 +92,11 @@ export const listSeasonsHandler = async (ctx: Context) => {
       return ctx.reply('No seasons available.');
     }
 
-    const list = seasons.map((s) => `- ${s.name} (${s.isActive ? 'Active' : 'Ended'})`).join('\n');
+    const list = seasons.map((s) => {
+      const isActive = s.status === SeasonStatus.Active;
+
+      return `- ${s.name} (${isActive ? 'Active' : 'Ended'})`
+    }).join('\n');
 
     ctx.reply(`Seasons:\n${list}`);
   } catch (error) {

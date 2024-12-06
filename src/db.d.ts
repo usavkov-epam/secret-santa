@@ -26,7 +26,6 @@ export interface SeasonDocument extends Document {
   id: string;
   name: string;
   status: SeasonStatus;
-  isActive: boolean;
   endDate?: Date;
   createdAt: Date;
   updatedAt: Date;

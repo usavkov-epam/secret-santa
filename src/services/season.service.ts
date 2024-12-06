@@ -1,4 +1,7 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import type { SeasonDocument } from '../db';
+import { SeasonStatus } from '../enums';
 import {
   Participant as ParticipantModel,
   Season as SeasonModel,
@@ -11,18 +14,21 @@ class SeasonService {
    * @param endDate - The end date of the season.
    */
   async createSeason(name: string, endDate?: Date): Promise<SeasonDocument> {
-    const existingActiveSeason = await SeasonModel.findOne({ isActive: true });
+    const existingActiveSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (existingActiveSeason) {
       throw new Error('An active season already exists. End it before starting a new one.');
     }
 
     const season = new SeasonModel({
+      id: uuidv4(),
       name,
       endDate: endDate || null,
-      isActive: true,
+      status: SeasonStatus.NotStarted,
       participants: [],
     });
+
+    console.log(season);
 
     return await season.save();
   }
@@ -31,15 +37,27 @@ class SeasonService {
    * Ends the current active season.
    */
   async endCurrentSeason(): Promise<SeasonDocument> {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
-    currentSeason.isActive = false;
+    currentSeason.status = SeasonStatus.Ended;
 
     return await currentSeason.save();
+  }
+
+  async startSeason(name: string) {
+    const season = await SeasonModel.findOne({ name });
+
+    if (!season) {
+      throw new Error('No active season found.');
+    }
+
+    season.status = SeasonStatus.Active;
+
+    return await season.save();
   }
 
   /**
@@ -53,7 +71,7 @@ class SeasonService {
    * Retrieves the current active season.
    */
   async getCurrentSeason(): Promise<SeasonDocument> {
-    const currentSeason = await SeasonModel.findOne({ isActive: true });
+    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
 
     if (!currentSeason) {
       throw new Error('No active season found.');
