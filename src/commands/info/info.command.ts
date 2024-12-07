@@ -7,7 +7,8 @@ const commonCommands = [
   '/join - Join the current season',
   '/leave - Leave the current season',
   '/recipient - See your recipient',
-  '/help - Show this help message',
+  '/support - Send a message to support team',
+  '/help - Show helpful message',
   '/status - Show current season status',
 ];
 
