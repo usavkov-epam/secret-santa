@@ -6,7 +6,7 @@ import { connectToDatabase } from './config/database';
 import registerCommands from './commands';
 
 const isProduction = process.env.NODE_ENV === 'production';
-const TELEGRAM_WEBHOOK_URL = process.env.TELEGRAM_WEBHOOK_URL!;
+const TG_BOT_WEBHOOK_URL = process.env.TG_BOT_WEBHOOK_URL!;
 const TG_BOT_API_TOKEN = process.env.TG_BOT_API_TOKEN!;
 
 const bot = new Telegraf(TG_BOT_API_TOKEN);
@@ -19,7 +19,7 @@ connectToDatabase().then(async (mongoose) => {
       isProduction
         ? {
             webhook: {
-              domain: TELEGRAM_WEBHOOK_URL,
+              domain: TG_BOT_WEBHOOK_URL,
               port: Number(process.env.PORT || '3000'),
             },
           }
