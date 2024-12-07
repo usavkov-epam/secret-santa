@@ -1,0 +1,56 @@
+{
+  "name": "secret-santa",
+  "version": "0.1.0",
+  "description": "Telegram bot for Secret Santa events",
+  "main": "src/main.ts",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usavkov-epam/secret-santa.git"
+  },
+  "keywords": [
+    "secret",
+    "santa",
+    "secret-santa",
+    "new",
+    "year",
+    "new-year",
+    "christmas",
+    "gifts"
+  ],
+  "author": "Yury Saukou <yury.saukou@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/usavkov-epam/secret-santa/issues"
+  },
+  "homepage": "https://github.com/usavkov-epam/secret-santa#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "mongoose": "^8.8.3",
+    "telegraf": "^4.16.3",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^20",
+    "@types/nodemailer": "^6.4.16",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jest": "^28.9.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
