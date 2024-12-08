@@ -32,7 +32,12 @@ export const ParticipantSchema = new mongoose.Schema(
       type: String,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
+
+// Adding unique index to prevent duplicates for the same season
+ParticipantSchema.index({ telegramId: 1, seasonId: 1 }, { unique: true });
 
 export const Participant = mongoose.model<ParticipantDocument>('Participant', ParticipantSchema);

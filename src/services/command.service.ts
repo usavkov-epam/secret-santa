@@ -14,7 +14,6 @@ class CommandService {
   }
 
   async updateState(userId: number, updates: Partial<{ step: number; data: Record<string, any> }>) {
-    console.log('updates', updates);
     await CommandStep.findOneAndUpdate({ userId }, { $set: updates }).exec();
   }
 

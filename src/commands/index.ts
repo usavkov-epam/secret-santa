@@ -30,8 +30,6 @@ const registerCommands = (bot: Telegraf) => {
     const userId = ctx.from!.id;
     const state = await commandService.getState(userId);
 
-    console.log('state', state);
-
     if (state?.command) {
       switch (state.command) {
         case 'join': {

@@ -26,4 +26,5 @@ export const registerAdminCommands = (bot: Telegraf) => {
 
 export {
   handleLaunchSeasonSteps,
+  launchSeasonCommandSteps,
 } from './launch.command';

@@ -49,10 +49,10 @@ export const launchSeasonHandler = async (ctx: Context) => {
   }
 }
 
-export const handleLaunchSeasonSteps = (ctx: Context, state: any /* TODO: set type */) => {
+export const handleLaunchSeasonSteps = async (ctx: Context, state: any /* TODO: set type */) => {
   const currentStep = launchSeasonCommandSteps.find((step) => step.step === state.step);
 
   if (currentStep) {
-    currentStep.action(ctx);
+    await currentStep.action(ctx);
   }
 };

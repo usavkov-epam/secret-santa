@@ -1,7 +1,22 @@
 import { Context } from 'telegraf';
 
-import { commandService, currentSeasonService, seasonService } from '../../services';
-import { getProgressBar, isAdmin } from '../../utils';
+import {
+  commandService,
+  currentSeasonService,
+} from '../../services';
+import {
+  getProgressBar,
+  isAdmin,
+} from '../../utils';
+import { launchSeasonCommandSteps } from '../admin';
+import { joinCommandSteps } from '../member';
+import { supportCommandSteps } from './support.command';
+
+const commandsDict: any /* TODO: specify type */ = {
+  'launch_season': launchSeasonCommandSteps,
+  'support': supportCommandSteps,
+  'join': joinCommandSteps,
+};
 
 const commonCommands = [
   '/join - Join the current season',
@@ -42,6 +57,7 @@ export const helpHandler = (ctx: Context) => {
 export const statusHandler = async (ctx: Context) => {
   try {
     const status = await currentSeasonService.getCurrentSeasonStatus();
+
     ctx.reply(status);
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
@@ -60,10 +76,10 @@ export const commandStateHandler = async (ctx: Context) => {
     const state = await commandService.getState(ctx.from.id);
 
     if (!state) {
-      return ctx.reply('❕ No active command state found');
+      return ctx.reply('❕No active command state found');
     }
 
-    ctx.reply(`Current state: ${state.command}: ${getProgressBar(state.step, 3)}`);
+    ctx.reply(`Current state:\n${state.command}: ${getProgressBar(state.step - 1, commandsDict[state.command]?.length)}`);
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
   }

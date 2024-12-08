@@ -1,9 +1,6 @@
 import { Context } from 'telegraf';
 
-import {
-  commandService,
-  participantService,
-} from '../../services';
+import { commandService, currentSeasonService, participantService } from '../../services';
 import { ParticipantJoinData } from '../../types';
 
 // Define the structure of the steps for the command
@@ -41,7 +38,10 @@ export const joinCommandSteps = [
     message: 'Step 3: Please provide a link to your profile.',
     action: async (ctx: any) => {
       const currentState = await commandService.getState(ctx.from.id);
-      const updatedData = { ...currentState?.data, sharedLink: ctx.message.text } as ParticipantJoinData;
+      const updatedData = {
+        ...currentState?.data,
+        sharedLink: ctx.message.text,
+      } as ParticipantJoinData;
 
       try {
         await commandService.updateState(ctx.from.id, {
@@ -73,21 +73,29 @@ export const joinCommandSteps = [
  * Joins the current season.
  */
 export const joinHandler = async (ctx: Context) => {
-  if (await participantService.checkIfParticipantExists(ctx.from!.username as string)) {
-    return ctx.reply('❌ You have already joined the season.');
-  }
+  try {
+    if (!(await currentSeasonService.getCurrentSeason())) {
+      return ctx.reply('❌ No active season found.');
+    }
 
-  const userId = ctx.from!.id; // TODO: Handle the case when ctx.from is undefined
+    if (await participantService.checkIfParticipantExists(ctx.from!.username as string)) {
+      return ctx.reply('❌ You have already joined the season.');
+    }
 
-  const state = await commandService.getState(userId);
+    const userId = ctx.from!.id; // TODO: Handle the case when ctx.from is undefined
 
-  // If the user doesn't have a state, set it
-  if (!state) {
-    await commandService.setState(userId, 'join');
-    await ctx.reply(joinCommandSteps[0].message);
-  } else {
-    // If the user has a state, handle the steps
-    await handleJoinSteps(ctx, state);
+    const state = await commandService.getState(userId);
+
+    // If the user doesn't have a state, set it
+    if (!state) {
+      await commandService.setState(userId, 'join');
+      await ctx.reply(joinCommandSteps[0].message);
+    } else {
+      // If the user has a state, handle the steps
+      await handleJoinSteps(ctx, state);
+    }
+  } catch (error) {
+    ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
 

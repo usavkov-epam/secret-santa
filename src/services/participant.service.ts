@@ -168,7 +168,7 @@ class ParticipantService {
     return participant.recipient;
   }
 
-  checkIfParticipantExists(username: string) {
+  async checkIfParticipantExists(username: string) {
     return ParticipantModel.exists({ username });
   }
 }
