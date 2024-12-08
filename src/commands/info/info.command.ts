@@ -1,6 +1,6 @@
 import { Context } from 'telegraf';
 
-import { seasonService } from '../../services';
+import { currentSeasonService, seasonService } from '../../services';
 import { isAdmin } from '../../utils';
 
 const commonCommands = [
@@ -38,7 +38,7 @@ export const helpHandler = (ctx: Context) => {
  */
 export const statusHandler = async (ctx: Context) => {
   try {
-    const status = await seasonService.getCurrentSeasonStatus();
+    const status = await currentSeasonService.getCurrentSeasonStatus();
     ctx.reply(status);
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);

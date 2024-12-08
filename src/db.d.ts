@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { SeasonStatus } from './enums';
 
 export interface Participant {
-  id: string;
+  _id: string;
   telegramId?: number;
   username?: string;
   fullName?: string;
@@ -12,7 +12,7 @@ export interface Participant {
 }
 
 export interface ParticipantDocument extends Document {
-  id: string;
+  _id: string;
   telegramId: number;
   username?: string;
   fullName: string;
@@ -23,7 +23,7 @@ export interface ParticipantDocument extends Document {
 }
 
 export interface SeasonDocument extends Document {
-  id: string;
+  _id: string;
   name: string;
   status: SeasonStatus;
   endDate?: Date;

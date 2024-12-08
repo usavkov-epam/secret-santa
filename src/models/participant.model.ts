@@ -1,13 +1,9 @@
 import mongoose from 'mongoose';
+
 import type { ParticipantDocument } from '../db';
 
 export const ParticipantSchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      unique: true,
-      required: true,
-    },
     telegramId: {
       type: Number,
       required: true,
@@ -24,6 +20,10 @@ export const ParticipantSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    recipient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Participant',
+    }
   },
   { timestamps: true },
 );

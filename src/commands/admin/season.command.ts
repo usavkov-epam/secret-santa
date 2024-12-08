@@ -1,8 +1,11 @@
 import { Context } from 'telegraf';
 
-import { seasonService } from '../../services';
-import { isAdmin } from '../../utils';
 import { SeasonStatus } from '../../enums';
+import {
+  currentSeasonService,
+  seasonService,
+} from '../../services';
+import { isAdmin } from '../../utils';
 
 /**
  * Handler for the /launch command.
@@ -56,10 +59,18 @@ export const launchSeasonHandler = async (ctx: Context) => {
     return ctx.reply('❌ Please provide a name for the season. Example: /launch_season Christmas2024');
   }
 
-  await seasonService.startSeason(seasonName);
+  await currentSeasonService.startCurrentSeason(seasonName);
 
   ctx.reply(`✔️ Season "${seasonName}" has been successfully launched!`);
 }
+
+export const freezeSeasonHandler = async (ctx: Context) => {
+  if (!isAdmin(ctx.from?.id)) {
+    return ctx.reply('❌ You do not have permission to execute this command.');
+  }
+
+  await currentSeasonService.freezeCurrentSeason();
+};
 
 /**
  * Ends the current season.
@@ -70,7 +81,7 @@ export const endSeasonHandler = async (ctx: Context) => {
   }
 
   try {
-    const season = await seasonService.endCurrentSeason();
+    const season = await currentSeasonService.endCurrentSeason();
     ctx.reply(`✔️ Season "${season.name}" ended successfully!`);
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);

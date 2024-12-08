@@ -4,24 +4,22 @@ import type { TelegramUser } from '../types';
 
 import { Participant } from '../db';
 import { SeasonStatus } from '../enums';
-import {
-  Season as SeasonModel,
-  Participant as ParticipantModel,
-} from '../models';
+import { Participant as ParticipantModel } from '../models';
+import { currentSeasonService } from '../services';
 
 class ParticipantService {
   /**
    * Adds a participant to the current active season.
    */
   async addParticipantToCurrentSeason(data: Pick<Participant, 'username'>): Promise<Participant> {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const alreadyExists = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username: data.username,
     });
 
@@ -32,7 +30,7 @@ class ParticipantService {
     const participant = await ParticipantModel.create({
       ...data,
       id: uuidv4(),
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
     });
 
     await participant.save();
@@ -45,14 +43,14 @@ class ParticipantService {
    * @param username - The username of the participant.
    */
   async removeParticipantFromCurrentSeason(username: string): Promise<void> {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const participant = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username,
     });
 
@@ -67,13 +65,17 @@ class ParticipantService {
    * Gets all participants of the current active season.
    */
   async getParticipantsForCurrentSeason() {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
-    const allParticipants = await ParticipantModel.find({ seasonId: currentSeason.id });
+    if (currentSeason.season.status === SeasonStatus.Frozen) {
+      throw new Error('Secret Santa registration has ended.');
+    }
+
+    const allParticipants = await ParticipantModel.find({ seasonId: currentSeason.season._id });
 
     return allParticipants;
   }
@@ -82,14 +84,18 @@ class ParticipantService {
    * Adds the current user to the current season.
    */
   async joinCurrentSeason(telegramUser: TelegramUser) {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
-    const alreadyExists = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+    if (currentSeason.season.status === SeasonStatus.Frozen) {
+      throw new Error('Secret Santa registration has ended.');
+    }
+
+    const alreadyExists = await ParticipantModel.exists({
+      seasonId: currentSeason.season._id,
       username: telegramUser.username,
     });
 
@@ -99,8 +105,7 @@ class ParticipantService {
 
     const participant = await ParticipantModel.create({
       ...telegramUser,
-      id: uuidv4(),
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
     });
 
     await participant.save();
@@ -113,14 +118,14 @@ class ParticipantService {
    * @param username - Telegram username.
    */
   async leaveCurrentSeason(username: string): Promise<void> {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const participant = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username,
     });
 
@@ -140,14 +145,14 @@ class ParticipantService {
    * @param username - Telegram username.
    */
   async getRecipient(username: string) {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const participant = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username,
     });
 
@@ -160,6 +165,10 @@ class ParticipantService {
     }
 
     return participant.recipient;
+  }
+
+  checkIfParticipantExists(username: string) {
+    return ParticipantModel.exists({ username });
   }
 }
 
