@@ -1,6 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
-
-import type { TelegramUser } from '../types';
+import type {
+  ParticipantJoinData,
+  TelegramUser,
+} from '../types';
 
 import { Participant } from '../db';
 import { SeasonStatus } from '../enums';
@@ -29,7 +30,6 @@ class ParticipantService {
 
     const participant = await ParticipantModel.create({
       ...data,
-      id: uuidv4(),
       seasonId: currentSeason.season._id,
     });
 
@@ -83,7 +83,7 @@ class ParticipantService {
   /**
    * Adds the current user to the current season.
    */
-  async joinCurrentSeason(telegramUser: TelegramUser) {
+  async joinCurrentSeason(telegramUser: TelegramUser, data: ParticipantJoinData) {
     const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
@@ -105,6 +105,7 @@ class ParticipantService {
 
     const participant = await ParticipantModel.create({
       ...telegramUser,
+      ...data,
       seasonId: currentSeason.season._id,
     });
 

@@ -4,6 +4,7 @@ import {
   commandService,
   participantService,
 } from '../../services';
+import { ParticipantJoinData } from '../../types';
 
 // Define the structure of the steps for the command
 export const joinCommandSteps = [
@@ -11,45 +12,56 @@ export const joinCommandSteps = [
     step: 0,
     message: 'Step 1: Please provide your full name (FirstName LastName).',
     action: async (ctx: any) => {
+      const currentState = await commandService.getState(ctx.from.id);
+      const updatedData = { ...currentState?.data, fullName: ctx.message.text };
+
       await commandService.updateState(ctx.from.id, {
         step: 1,
-        data: { fullName: ctx.message.text },
+        data: updatedData,
       });
-      await ctx.reply('Step 2: Please provide a link to your profile.');
+      await ctx.reply(joinCommandSteps[1].message);
     },
   },
   {
     step: 1,
     message: 'Step 2: Describe your preferences for a gift.',
     action: async (ctx: any) => {
+      const currentState = await commandService.getState(ctx.from.id);
+      const updatedData = { ...currentState?.data, wish: ctx.message.text };
+
       await commandService.updateState(ctx.from.id, {
         step: 2,
-        data: { ...ctx.state.data, wish: ctx.message.text },
+        data: updatedData,
       });
-      await ctx.reply('Step 3: Describe your preferences for a gift.');
+      await ctx.reply(joinCommandSteps[2].message);
     },
   },
   {
     step: 2,
     message: 'Step 3: Please provide a link to your profile.',
     action: async (ctx: any) => {
-      console.log(ctx.state.data);
+      const currentState = await commandService.getState(ctx.from.id);
+      const updatedData = { ...currentState?.data, sharedLink: ctx.message.text } as ParticipantJoinData;
 
       try {
         await commandService.updateState(ctx.from.id, {
           step: 3,
-          data: { ...ctx.state.data, sharedLink: ctx.message.text },
+          data: updatedData,
         });
 
-        const participant = await participantService.joinCurrentSeason({
-          telegramId: ctx.from?.id,
-          username: ctx.from?.username,
-          fullName: `${ctx.from?.first_name} ${ctx.from?.last_name}`.trim(),
-        });
+        const participant = await participantService.joinCurrentSeason(
+          {
+            telegramId: ctx.from?.id,
+            username: ctx.from?.username,
+            first_name: ctx.from?.first_name,
+            last_name: ctx.from?.last_name,
+          },
+          updatedData,
+        );
 
         await commandService.clearState(ctx.from.id); // Clear the state after completion
 
-        ctx.reply(`🎉 You have successfully joined the season as "${participant.fullName} (${participant.username})".`);
+        ctx.reply(`🎉 You have successfully joined the season as "${participant.fullName}".`);
       } catch (error) {
         ctx.reply(`❌ ${(error as Error).message}`);
       }
@@ -75,7 +87,7 @@ export const joinHandler = async (ctx: Context) => {
     await ctx.reply(joinCommandSteps[0].message);
   } else {
     // If the user has a state, handle the steps
-  await handleJoinSteps(ctx, state);
+    await handleJoinSteps(ctx, state);
   }
 };
 

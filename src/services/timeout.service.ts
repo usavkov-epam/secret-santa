@@ -1,6 +1,6 @@
 import { Context } from 'telegraf';
 
-import { userStateService } from './command.service';
+import { commandService } from './command.service';
 
 const activeTimeouts: Map<number, NodeJS.Timeout> = new Map();
 
@@ -12,7 +12,7 @@ const activeTimeouts: Map<number, NodeJS.Timeout> = new Map();
  */
 export function setTimeoutForUser(userId: number, timeout: number, ctx: Context): void {
   const timer = setTimeout(async () => {
-    await userStateService.clearState(userId);
+    await commandService.clearState(userId);
     activeTimeouts.delete(userId);
     await ctx.reply('You did not respond in time. The command has been canceled.');
   }, timeout * 1000);

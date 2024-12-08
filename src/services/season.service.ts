@@ -1,11 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import type { SeasonDocument } from '../db';
 import { SeasonStatus } from '../enums';
-import {
-  Participant as ParticipantModel,
-  Season as SeasonModel,
-} from '../models';
+import { Season as SeasonModel } from '../models';
 
 class SeasonService {
   /**

@@ -23,7 +23,14 @@ export const ParticipantSchema = new mongoose.Schema(
     recipient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Participant',
-    }
+    },
+    wish: {
+      type: String,
+      required: true,
+    },
+    sharedLink: {
+      type: String,
+    },
   },
   { timestamps: true },
 );
