@@ -84,3 +84,17 @@ export const commandStateHandler = async (ctx: Context) => {
     ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
+
+export const startHandler = (ctx: Context) => {
+  ctx.reply(
+    `**Hello! 👋 Welcome to the Secret Santa Bot! 🎅🎁**\n\n` +
+      `I’m here to make your Secret Santa experience fun and effortless.\n` +
+      `You can:\n` +
+      `🎉 Join the current season.\n` +
+      `🎁 Share your preferences and help your Santa pick the perfect gift.\n` +
+      `🔔 Get notified when the exchange is ready.\n\n` +
+      `Type /join to participate in this season, or /help for more details.\n\n` +
+      `Let’s make this holiday season magical! ✨`,
+    { parse_mode: 'Markdown' } // Enables Markdown formatting
+  );
+};
