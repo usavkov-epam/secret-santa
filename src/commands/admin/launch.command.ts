@@ -8,6 +8,10 @@ export const launchSeasonCommandSteps = [
     step: 0,
     message: '🚀 Please provide a name of the season.',
     action: async (ctx: Context) => {
+      if (!ctx.from) {
+        return ctx.reply('❌ User not found');
+      }
+
       if (!ctx.message || !('text' in ctx.message)) {
         return ctx.reply('❌ This message does not contain valid text.');
       }
@@ -16,6 +20,8 @@ export const launchSeasonCommandSteps = [
     
       try {
         await currentSeasonService.startCurrentSeason(seasonName);
+        await commandService.clearState(ctx.from.id); // Clear the state after completion
+
         ctx.reply(`✔️ Season "${seasonName}" has been successfully launched!`);
       } catch (error) {
         ctx.reply(`❌ ${(error as Error).message}`);

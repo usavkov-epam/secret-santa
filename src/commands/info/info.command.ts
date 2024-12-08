@@ -1,7 +1,7 @@
 import { Context } from 'telegraf';
 
-import { currentSeasonService, seasonService } from '../../services';
-import { isAdmin } from '../../utils';
+import { commandService, currentSeasonService, seasonService } from '../../services';
+import { getProgressBar, isAdmin } from '../../utils';
 
 const commonCommands = [
   '/join - Join the current season',
@@ -10,6 +10,7 @@ const commonCommands = [
   '/support - Send a message to support team',
   '/help - Show helpful message',
   '/status - Show current season status',
+  '/state - Show active command state',
   '/cancel - Cancel the current operation',
 ];
 
@@ -42,6 +43,27 @@ export const statusHandler = async (ctx: Context) => {
   try {
     const status = await currentSeasonService.getCurrentSeasonStatus();
     ctx.reply(status);
+  } catch (error) {
+    ctx.reply(`❌ ${(error as Error).message}`);
+  }
+};
+
+/*
+ * Display active command state 
+ */
+export const commandStateHandler = async (ctx: Context) => {
+  if (!ctx.from) {
+    return ctx.reply('❌ User not found');
+  }
+
+  try {
+    const state = await commandService.getState(ctx.from.id);
+
+    if (!state) {
+      return ctx.reply('❕ No active command state found');
+    }
+
+    ctx.reply(`Current state: ${state.command}: ${getProgressBar(state.step, 3)}`);
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
   }
