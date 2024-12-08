@@ -1,6 +1,5 @@
 import { Context } from 'telegraf';
 
-import { SeasonStatus } from '../../enums';
 import {
   currentSeasonService,
   seasonService,
@@ -44,32 +43,17 @@ export const createSeasonHandler = async (ctx: Context) => {
   }
 };
 
-export const launchSeasonHandler = async (ctx: Context) => {
-  if (!isAdmin(ctx.from?.id)) {
-    return ctx.reply('❌ You do not have permission to execute this command.');
-  }
-
-  if (!ctx.message || !('text' in ctx.message)) {
-    return ctx.reply('❌ This message does not contain valid text.');
-  }
-
-  const seasonName = ctx.message.text.split(' ').slice(1).join(' ');
-
-  if (!seasonName) {
-    return ctx.reply('❌ Please provide a name for the season. Example: /launch_season Christmas2024');
-  }
-
-  await currentSeasonService.startCurrentSeason(seasonName);
-
-  ctx.reply(`✔️ Season "${seasonName}" has been successfully launched!`);
-}
-
 export const freezeSeasonHandler = async (ctx: Context) => {
   if (!isAdmin(ctx.from?.id)) {
     return ctx.reply('❌ You do not have permission to execute this command.');
   }
 
-  await currentSeasonService.freezeCurrentSeason();
+  try {
+    await currentSeasonService.freezeCurrentSeason();
+    ctx.reply('✔️ The current season has been frozen.');
+  } catch (error) {
+    ctx.reply(`❌ ${(error as Error).message}`);
+  }
 };
 
 /**
@@ -81,8 +65,14 @@ export const endSeasonHandler = async (ctx: Context) => {
   }
 
   try {
-    const season = await currentSeasonService.endCurrentSeason();
-    ctx.reply(`✔️ Season "${season.name}" ended successfully!`);
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+    
+    if (!currentSeason) {
+      return ctx.reply('❌ No active season found.');
+    }
+
+    await currentSeasonService.endCurrentSeason();
+    ctx.reply(`✔️ Season "${currentSeason.season.name}" ended successfully!`);
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
   }
@@ -104,9 +94,7 @@ export const listSeasonsHandler = async (ctx: Context) => {
     }
 
     const list = seasons.map((s) => {
-      const isActive = s.status === SeasonStatus.Active;
-
-      return `- ${s.name} (${isActive ? 'Active' : 'Ended'})`
+      return `- ${s.name} (${ s.status })`
     }).join('\n');
 
     ctx.reply(`Seasons:\n${list}`);

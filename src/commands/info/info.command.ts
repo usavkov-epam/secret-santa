@@ -10,10 +10,12 @@ const commonCommands = [
   '/support - Send a message to support team',
   '/help - Show helpful message',
   '/status - Show current season status',
+  '/cancel - Cancel the current operation',
 ];
 
 const adminCommands = [
   '/launch_season <name> <endDate> - Start a new season (admin)',
+  '/freeze_season - Freeze the current season (admin)',
   '/end_season - End the current season (admin)',
   '/add_participant <username> - Add a participant (admin)',
   '/remove_participant <username> - Remove a participant (admin)',

@@ -5,7 +5,10 @@ import {
 import { message } from 'telegraf/filters';
 
 import { commandService } from '../services';
-import { registerAdminCommands } from './admin';
+import {
+  handleLaunchSeasonSteps,
+  registerAdminCommands,
+} from './admin';
 import { cancelHandler } from './cancel.command';
 import {
   handleSupportSteps,
@@ -37,6 +40,10 @@ const registerCommands = (bot: Telegraf) => {
         }
         case 'support': {
           await handleSupportSteps(ctx, state);
+          break;
+        }
+        case 'launch_season': {
+          await handleLaunchSeasonSteps(ctx, state);
           break;
         }
       }

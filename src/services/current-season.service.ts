@@ -43,8 +43,12 @@ class CurrentSeasonService {
     const currentSeason = await this.getCurrentSeason();
 
 
-    if (!currentSeason) {
+    if (!currentSeason.season) {
       throw new Error('No active season found.');
+    }
+
+    if (currentSeason.season.status === SeasonStatus.Frozen) {
+      throw new Error('Season is already frozen.');
     }
 
     return await seasonService.updateSeasonStatus(currentSeason.season._id, SeasonStatus.Frozen);

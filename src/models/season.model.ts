@@ -16,6 +16,7 @@ const SeasonSchema = new mongoose.Schema(
       enum: [
         SeasonStatus.NotStarted,
         SeasonStatus.Active,
+        SeasonStatus.Frozen,
         SeasonStatus.Ended,
       ],
       default: SeasonStatus.NotStarted,
