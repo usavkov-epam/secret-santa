@@ -62,7 +62,7 @@ export const joinCommandSteps = [
         await commandService.clearState(ctx.from.id); // Clear the state after completion
 
         ctx.reply(
-          `🎉 You have successfully joined the season as **"${participant.fullName}"**.`,
+          `🎉 You have successfully joined the season as *"${participant.fullName}"*.`,
           { parse_mode: 'Markdown' },
         );
       } catch (error) {

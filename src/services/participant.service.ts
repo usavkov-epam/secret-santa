@@ -71,10 +71,6 @@ class ParticipantService {
       throw new Error('No active season found.');
     }
 
-    if (currentSeason.season.status === SeasonStatus.Frozen) {
-      throw new Error('Secret Santa registration has ended.');
-    }
-
     const allParticipants = await ParticipantModel.find({ seasonId: currentSeason.season._id });
 
     return allParticipants;
@@ -155,7 +151,7 @@ class ParticipantService {
     const participant = await ParticipantModel.findOne({
       seasonId: currentSeason.season._id,
       username,
-    });
+    }).populate('recipient');
 
     if (!participant) {
       throw new Error('You are not part of the current season.');

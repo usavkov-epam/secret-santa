@@ -13,7 +13,12 @@ export const myRecipientHandler = async (ctx: Context) => {
   try {
     const recipient = await participantService.getRecipient(ctx.from?.username);
 
-    ctx.reply(`You should give a gift to "${recipient.username}".`);
+    ctx.reply(
+      `🎁 You should give a gift to *${recipient.fullName}* (@\`${recipient.username}\`).\n\n` +
+      `🎄 Hint:\n_${recipient.wish || 'No wishlist provided.'}_\n\n` +
+      `👀 More info about the person: \`${recipient.sharedLink || 'No link provided.'}\``,
+      {  parse_mode: 'Markdown' },
+    );
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
   }

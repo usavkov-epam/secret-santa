@@ -34,12 +34,12 @@ const commonCommands = [
   '/update_shared_link - Update your profile link',
   '/support - Send a message to support team',
   '/help - Show helpful message',
-  '/status - Show current season status',
   '/state - Show active command state',
   '/cancel - Cancel the current operation',
 ];
 
 const adminCommands = [
+  '/status - Show current season status',
   '/launch_season <name> <endDate> - Start a new season (admin)',
   '/freeze_season - Freeze the current season (admin)',
   '/end_season - End the current season (admin)',
@@ -47,6 +47,8 @@ const adminCommands = [
   '/remove_participant <username> - Remove a participant (admin)',
   '/list_participants - List all participants (admin)',
   '/list_seasons - List all seasons (admin)',
+  '/distribute_participants - Distribute participants (admin)',
+  '/notify_assignment - Notify participants about their assignment (admin)',
 ];
 
 /**
@@ -97,7 +99,7 @@ export const commandStateHandler = async (ctx: Context) => {
 
 export const startHandler = (ctx: Context) => {
   ctx.reply(
-    `**Hello! 👋 Welcome to the Secret Santa Bot! 🎅🎁**\n\n` +
+    `*Hello! 👋 Welcome to the Secret Santa Bot! 🎅🎁*\n\n` +
       `I’m here to make your Secret Santa experience fun and effortless.\n` +
       `You can:\n` +
       `🎉 Join the current season.\n` +
