@@ -6,11 +6,6 @@ import { SeasonStatus } from '../enums';
 
 const SeasonSchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     name: {
       type: String,
       required: true,
@@ -21,6 +16,7 @@ const SeasonSchema = new mongoose.Schema(
       enum: [
         SeasonStatus.NotStarted,
         SeasonStatus.Active,
+        SeasonStatus.Frozen,
         SeasonStatus.Ended,
       ],
       default: SeasonStatus.NotStarted,

@@ -1,27 +1,26 @@
-import { v4 as uuidv4 } from 'uuid';
-
-import type { TelegramUser } from '../types';
+import type {
+  ParticipantJoinData,
+  TelegramUser,
+} from '../types';
 
 import { Participant } from '../db';
 import { SeasonStatus } from '../enums';
-import {
-  Season as SeasonModel,
-  Participant as ParticipantModel,
-} from '../models';
+import { Participant as ParticipantModel } from '../models';
+import { currentSeasonService } from '../services';
 
 class ParticipantService {
   /**
    * Adds a participant to the current active season.
    */
   async addParticipantToCurrentSeason(data: Pick<Participant, 'username'>): Promise<Participant> {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const alreadyExists = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username: data.username,
     });
 
@@ -31,8 +30,7 @@ class ParticipantService {
 
     const participant = await ParticipantModel.create({
       ...data,
-      id: uuidv4(),
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
     });
 
     await participant.save();
@@ -45,14 +43,14 @@ class ParticipantService {
    * @param username - The username of the participant.
    */
   async removeParticipantFromCurrentSeason(username: string): Promise<void> {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const participant = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username,
     });
 
@@ -67,13 +65,13 @@ class ParticipantService {
    * Gets all participants of the current active season.
    */
   async getParticipantsForCurrentSeason() {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
-    const allParticipants = await ParticipantModel.find({ seasonId: currentSeason.id });
+    const allParticipants = await ParticipantModel.find({ seasonId: currentSeason.season._id });
 
     return allParticipants;
   }
@@ -81,15 +79,19 @@ class ParticipantService {
   /**
    * Adds the current user to the current season.
    */
-  async joinCurrentSeason(telegramUser: TelegramUser) {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+  async joinCurrentSeason(telegramUser: TelegramUser, data: ParticipantJoinData) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
-    const alreadyExists = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+    if (currentSeason.season.status === SeasonStatus.Frozen) {
+      throw new Error('Secret Santa registration has ended.');
+    }
+
+    const alreadyExists = await ParticipantModel.exists({
+      seasonId: currentSeason.season._id,
       username: telegramUser.username,
     });
 
@@ -99,8 +101,8 @@ class ParticipantService {
 
     const participant = await ParticipantModel.create({
       ...telegramUser,
-      id: uuidv4(),
-      seasonId: currentSeason.id,
+      ...data,
+      seasonId: currentSeason.season._id,
     });
 
     await participant.save();
@@ -113,14 +115,14 @@ class ParticipantService {
    * @param username - Telegram username.
    */
   async leaveCurrentSeason(username: string): Promise<void> {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const participant = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username,
     });
 
@@ -140,16 +142,16 @@ class ParticipantService {
    * @param username - Telegram username.
    */
   async getRecipient(username: string) {
-    const currentSeason = await SeasonModel.findOne({ status: SeasonStatus.Active });
+    const currentSeason = await currentSeasonService.getCurrentSeason();
 
     if (!currentSeason) {
       throw new Error('No active season found.');
     }
 
     const participant = await ParticipantModel.findOne({
-      seasonId: currentSeason.id,
+      seasonId: currentSeason.season._id,
       username,
-    });
+    }).populate('recipient');
 
     if (!participant) {
       throw new Error('You are not part of the current season.');
@@ -160,6 +162,114 @@ class ParticipantService {
     }
 
     return participant.recipient;
+  }
+
+  async checkIfParticipantExists(username: string) {
+    return ParticipantModel.exists({ username });
+  }
+
+  /*
+   * Get wish by username 
+   */
+  async getWish(username: string) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    const participant = await ParticipantModel.findOne({
+      seasonId: currentSeason.season._id,
+      username,
+    });
+
+    if (!participant) {
+      throw new Error('Participant not found.');
+    }
+
+    return participant.wish;
+  }
+
+  /*
+   * Update wish by username
+  */
+  async updateWish(username: string, wish: string) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    if (currentSeason.season.status === SeasonStatus.Frozen) {
+      throw new Error('Secret Santa registration has ended and the draw stage began.');
+    }
+
+    const participant = await ParticipantModel.findOne({
+      seasonId: currentSeason.season._id,
+      username,
+    });
+
+    if (!participant) {
+      throw new Error('Participant not found.');
+    }
+
+    participant.wish = wish;
+
+    await participant.save();
+
+    return participant;
+  }
+
+  /**
+   * Get link by username
+   */
+  async getLink(username: string) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    const participant = await ParticipantModel.findOne({
+      seasonId: currentSeason.season._id,
+      username,
+    });
+
+    if (!participant) {
+      throw new Error('Participant not found.');
+    }
+
+    return participant.sharedLink;
+  }
+
+  /**
+   * Update link by username
+   */
+  async updateLink(username: string, link: string) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    if (currentSeason.season.status === SeasonStatus.Frozen) {
+      throw new Error('Secret Santa registration has ended and the draw stage began.');
+    }
+
+    const participant = await ParticipantModel.findOne({
+      seasonId: currentSeason.season._id,
+      username,
+    });
+
+    if (!participant) {
+      throw new Error('Participant not found.');
+    }
+
+    participant.sharedLink = link;
+
+    await participant.save();
+
+    return participant;
   }
 }
 
