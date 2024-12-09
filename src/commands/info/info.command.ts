@@ -11,6 +11,7 @@ import {
 import { launchSeasonCommandSteps } from '../admin';
 import {
   joinCommandSteps,
+  updateSharedLinkCommandSteps,
   updateWishCommandSteps,
 } from '../member';
 import { supportCommandSteps } from './support.command';
@@ -20,6 +21,7 @@ const commandsDict: any /* TODO: specify type */ = {
   'support': supportCommandSteps,
   'join': joinCommandSteps,
   'update_wish': updateWishCommandSteps,
+  'update_shared_link': updateSharedLinkCommandSteps,
 };
 
 const commonCommands = [
@@ -29,6 +31,7 @@ const commonCommands = [
   '/wish - See your wish',
   '/update_wish - Update your wish',
   '/shared_link - Get your profile link',
+  '/update_shared_link - Update your profile link',
   '/support - Send a message to support team',
   '/help - Show helpful message',
   '/status - Show current season status',

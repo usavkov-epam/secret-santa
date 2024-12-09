@@ -35,7 +35,7 @@ export const joinCommandSteps = [
   },
   {
     step: 2,
-    message: 'Step 3: Please provide a link to your profile.',
+    message: 'Step 3: Please provide a link to your profile which help Secret Santa to get your lifestyle (e.g. Instagram, Facebook, etc.). Or /empty',
     action: async (ctx: any) => {
       const currentState = await commandService.getState(ctx.from.id);
       const updatedData = {
@@ -61,7 +61,10 @@ export const joinCommandSteps = [
 
         await commandService.clearState(ctx.from.id); // Clear the state after completion
 
-        ctx.reply(`🎉 You have successfully joined the season as "${participant.fullName}".`);
+        ctx.reply(
+          `🎉 You have successfully joined the season as **"${participant.fullName}"**.`,
+          { parse_mode: 'Markdown' },
+        );
       } catch (error) {
         ctx.reply(`❌ ${(error as Error).message}`);
       }
@@ -89,10 +92,16 @@ export const joinHandler = async (ctx: Context) => {
     // If the user doesn't have a state, set it
     if (!state) {
       await commandService.setState(userId, 'join');
-      await ctx.reply(joinCommandSteps[0].message);
+      await ctx.reply(
+        joinCommandSteps[0].message,
+        { parse_mode: 'Markdown' },
+      );
     } else {
       // If the user has a state, handle the steps
-      await handleJoinSteps(ctx, state);
+      await ctx.reply(
+        joinCommandSteps[state.step].message,
+        { parse_mode: 'Markdown' },
+      );
     }
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
