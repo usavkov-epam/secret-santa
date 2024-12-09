@@ -105,7 +105,7 @@ class CurrentSeasonService {
 
     const participants = await Participant.find({ seasonId: currentSeason.season._id });
 
-    return `Season: ${currentSeason.season.name}\nParticipants: ${participants.length}\nStatus: ${currentSeason.season.status}\nEnd Date: ${
+    return `Season: \`${currentSeason.season.name}\`\nParticipants: ${participants.length}\nStatus: ${currentSeason.season.status}\nEnd Date: ${
       currentSeason.season.endDate ? currentSeason.season.endDate.toISOString() : 'Not set'
     }`;
   }

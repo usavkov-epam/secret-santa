@@ -70,7 +70,7 @@ export const statusHandler = async (ctx: Context) => {
   try {
     const status = await currentSeasonService.getCurrentSeasonStatus();
 
-    ctx.reply(status);
+    ctx.reply(status, { parse_mode: 'Markdown' });
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
   }
