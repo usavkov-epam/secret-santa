@@ -4,6 +4,7 @@ import {
   commandService,
   participantService,
 } from '../../services';
+import { sanitizeForMarkdown } from '../../utils';
 
 export const updateSharedLinkCommandSteps = [
   {
@@ -37,8 +38,8 @@ export const myLinkHandler = async (ctx: Context) => {
     const link = await participantService.getLink(ctx.from?.username);
 
     ctx.reply(
-      `Your profile link: \`${link}\`.`,
-      { parse_mode: 'Markdown' },
+      `Your profile link: \`${sanitizeForMarkdown(link)}\`\\.`,
+      { parse_mode: 'MarkdownV2' },
     );
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);

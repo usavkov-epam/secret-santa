@@ -1,7 +1,6 @@
 import type { SeasonDocument } from '../db';
 import { SeasonStatus } from '../enums';
 import { Season as SeasonModel } from '../models';
-import { currentSeasonService } from './current-season.service';
 
 class SeasonService {
   /**
@@ -10,17 +9,10 @@ class SeasonService {
    * @param endDate - The end date of the season.
    */
   async createSeason(name: string, endDate?: Date): Promise<SeasonDocument> {
-    const existingActiveSeason = await currentSeasonService.getCurrentSeason();
-
-    if (existingActiveSeason) {
-      throw new Error('❌ An active season already exists. End it before starting a new one.');
-    }
-
     const season = new SeasonModel({
       name,
       endDate: endDate || null,
       status: SeasonStatus.NotStarted,
-      participants: [],
     });
 
     return await season.save();

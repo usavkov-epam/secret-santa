@@ -42,7 +42,7 @@ const registerCommands = (bot: Telegraf) => {
           await handleSupportSteps(ctx, state);
           break;
         }
-        case 'launch_season': {
+        case 'launch_current_season': {
           await handleLaunchSeasonSteps(ctx, state);
           break;
         }

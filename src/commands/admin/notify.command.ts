@@ -5,6 +5,7 @@ import {
   currentSeasonService,
   participantService,
 } from '../../services';
+import { sanitizeForMarkdown } from '../../utils';
 
 export const notifyParticipantsAboutAssignmentCommand = async (ctx: Context) => {
   const currentSeason = await currentSeasonService.getCurrentSeason();
@@ -22,18 +23,20 @@ export const notifyParticipantsAboutAssignmentCommand = async (ctx: Context) => 
       const recipient = await participantService.getRecipient(participant.username);
 
       const message = (
-        `🎅 Hello, ${participant.fullName}!\n\n` +
-        'You are the Secret Santa for:\n' +
-        `🎁 *${recipient?.fullName}* (@\`${recipient?.username ?? 'No username'}\`)\n\n` +
+        `🎅 Hello, ${sanitizeForMarkdown(participant.fullName)}\\!\n\n` +
 
-        `Here's the hint for a present:\n_${recipient?.wish ?? 'No wishlist provided.'}_\n\n` +
-        `More info about the person: \`${recipient?.sharedLink ?? 'No link provided.'}\`\n\n` +
+        '🎁 You are the Secret Santa for:\n' +
+        `*${sanitizeForMarkdown(recipient?.fullName)}* \\(@\`${sanitizeForMarkdown(recipient?.username) ?? 'No username'}\`\\)\n\n` +
 
-        '🎄 Happy gifting! 🎄'
+        `📝 Here's the hint for a present:\n_${sanitizeForMarkdown(recipient?.wish) ?? 'No wishlist provided.'}_\n\n` +
+
+        `👀 More info about the person: \`${sanitizeForMarkdown(recipient?.sharedLink) ?? 'No link provided.'}\`\n\n` +
+
+        '🎄 Happy gifting\\! 🎄'
       );
 
       try {
-        await ctx.telegram.sendMessage(participant.telegramId, message, { parse_mode: 'Markdown' });
+        await ctx.telegram.sendMessage(participant.telegramId, message, { parse_mode: 'MarkdownV2' });
       } catch (error) {
         console.error(`❌ Failed to notify participant ${participant.telegramId}:`, error);
       }

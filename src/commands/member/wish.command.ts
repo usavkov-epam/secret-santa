@@ -1,6 +1,10 @@
 import { Context } from 'telegraf';
 
-import { commandService, participantService } from '../../services';
+import {
+  commandService,
+  participantService,
+} from '../../services';
+import { sanitizeForMarkdown } from '../../utils';
 
 export const updateWishCommandSteps = [
   {
@@ -34,8 +38,8 @@ export const myWishHandler = async (ctx: Context) => {
     const wish = await participantService.getWish(ctx.from?.username);
 
     ctx.reply(
-      `Your wish:\n"_${wish}_".`,
-      { parse_mode: 'Markdown' },
+      `Your wish:\n"_${sanitizeForMarkdown(wish)}_"\\.`,
+      { parse_mode: 'MarkdownV2' },
     );
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);

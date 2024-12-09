@@ -1,13 +1,13 @@
 import { Context } from 'telegraf';
 
+import { seasonService } from '../../services';
 import {
-  currentSeasonService,
-  seasonService,
-} from '../../services';
-import { isAdmin } from '../../utils';
+  isAdmin,
+  sanitizeForMarkdown,
+} from '../../utils';
 
 /**
- * Handler for the /launch command.
+ * Handler for the /create_season command.
  * Only accessible by admins.
  */
 export const createSeasonHandler = async (ctx: Context) => {
@@ -22,7 +22,7 @@ export const createSeasonHandler = async (ctx: Context) => {
       const args = message.text.split(' ').slice(1);
 
       if (args.length === 0) {
-        ctx.reply('❌ Please provide a name for the season. Example: /launch Christmas2024');
+        ctx.reply('❌ Please provide a name for the season. Example: /create_season Christmas2024');
         return;
       }
 
@@ -43,41 +43,6 @@ export const createSeasonHandler = async (ctx: Context) => {
   }
 };
 
-export const freezeSeasonHandler = async (ctx: Context) => {
-  if (!isAdmin(ctx.from?.id)) {
-    return ctx.reply('❌ You do not have permission to execute this command.');
-  }
-
-  try {
-    await currentSeasonService.freezeCurrentSeason();
-    ctx.reply('✔️ The current season has been frozen.');
-  } catch (error) {
-    ctx.reply(`❌ ${(error as Error).message}`);
-  }
-};
-
-/**
- * Ends the current season.
- */
-export const endSeasonHandler = async (ctx: Context) => {
-  if (!isAdmin(ctx.from?.id)) {
-    return ctx.reply('❌ You do not have permission to execute this command.');
-  }
-
-  try {
-    const currentSeason = await currentSeasonService.getCurrentSeason();
-    
-    if (!currentSeason) {
-      return ctx.reply('❌ No active season found.');
-    }
-
-    await currentSeasonService.endCurrentSeason();
-    ctx.reply(`✔️ Season "${currentSeason.season.name}" ended successfully!`);
-  } catch (error) {
-    ctx.reply(`❌ ${(error as Error).message}`);
-  }
-};
-
 /**
  * Lists all seasons.
  */
@@ -94,10 +59,10 @@ export const listSeasonsHandler = async (ctx: Context) => {
     }
 
     const list = seasons.map((s) => {
-      return `- ${s.name} (${ s.status })`
-    }).join('\n');
+      return `\\- \`${sanitizeForMarkdown(s.name)}\`: *${sanitizeForMarkdown(s.status)}*`
+    }).join(' \n');
 
-    ctx.reply(`Seasons:\n${list}`);
+    ctx.reply(`Seasons:\n${list}`, {  parse_mode: 'MarkdownV2' });
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
   }

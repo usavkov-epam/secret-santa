@@ -7,6 +7,7 @@ import {
 import {
   getProgressBar,
   isAdmin,
+  sanitizeForMarkdown,
 } from '../../utils';
 import { launchSeasonCommandSteps } from '../admin';
 import {
@@ -17,7 +18,7 @@ import {
 import { supportCommandSteps } from './support.command';
 
 const commandsDict: any /* TODO: specify type */ = {
-  'launch_season': launchSeasonCommandSteps,
+  'launch_current_season': launchSeasonCommandSteps,
   'support': supportCommandSteps,
   'join': joinCommandSteps,
   'update_wish': updateWishCommandSteps,
@@ -40,14 +41,16 @@ const commonCommands = [
 
 const adminCommands = [
   '/status - Show current season status',
-  '/launch_season <name> <endDate> - Start a new season (admin)',
-  '/freeze_season - Freeze the current season (admin)',
-  '/end_season - End the current season (admin)',
+  '/create_season <name> - Create a new season (admin)',
+  '/launch_current_season - Start a new season (admin)',
+  '/freeze_current_season - Freeze the current season (admin)',
+  '/end_current_season - End the current season (admin)',
   '/add_participant <username> - Add a participant (admin)',
   '/remove_participant <username> - Remove a participant (admin)',
   '/list_participants - List all participants (admin)',
   '/list_seasons - List all seasons (admin)',
   '/distribute_participants - Distribute participants (admin)',
+  '/clear_distribution - Clear distribution (admin)',
   '/notify_assignment - Notify participants about their assignment (admin)',
 ];
 
@@ -70,7 +73,7 @@ export const statusHandler = async (ctx: Context) => {
   try {
     const status = await currentSeasonService.getCurrentSeasonStatus();
 
-    ctx.reply(status, { parse_mode: 'Markdown' });
+    ctx.reply(sanitizeForMarkdown(status), { parse_mode: 'MarkdownV2' });
   } catch (error) {
     ctx.reply(`❌ ${(error as Error).message}`);
   }
@@ -99,14 +102,14 @@ export const commandStateHandler = async (ctx: Context) => {
 
 export const startHandler = (ctx: Context) => {
   ctx.reply(
-    `*Hello! 👋 Welcome to the Secret Santa Bot! 🎅🎁*\n\n` +
-      `I’m here to make your Secret Santa experience fun and effortless.\n` +
+    `*Hello\\! 👋 Welcome to the Secret Santa Bot\\! 🎅🎁*\n\n` +
+      `I’m here to make your Secret Santa experience fun and effortless\\.\n` +
       `You can:\n` +
-      `🎉 Join the current season.\n` +
-      `🎁 Share your preferences and help your Santa pick the perfect gift.\n` +
-      `🔔 Get notified when the exchange is ready.\n\n` +
-      `Type /join to participate in this season, or /help for more details.\n\n` +
-      `Let’s make this holiday season magical! ✨`,
-    { parse_mode: 'Markdown' } // Enables Markdown formatting
+      `🎉 Join the current season\\.\n` +
+      `🎁 Share your preferences and help your Santa pick the perfect gift\\.\n` +
+      `🔔 Get notified when the exchange is ready\\.\n\n` +
+      `Type /join to participate in this season, or /help for more details\\.\n\n` +
+      `Let’s make this holiday season magical\\! ✨`,
+    { parse_mode: 'MarkdownV2' } // Enables Markdown formatting
   );
 };

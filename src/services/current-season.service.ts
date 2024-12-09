@@ -5,7 +5,10 @@ import {
   Participant,
   Season,
 } from '../models';
-import { seasonService } from '../services';
+import {
+  distributionService,
+  seasonService,
+} from '../services';
 
 class CurrentSeasonService {
   /**

@@ -67,6 +67,23 @@ export class DistributionService {
 
     return participants;
   }
+
+  /*
+   * Clear participants distribution 
+   */
+  public async clearParticipantsDistribution(): Promise<void> {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+    const seasonId = currentSeason.season._id;
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    await ParticipantModel.updateMany(
+      { seasonId },
+      { $unset: { recipient: 1 } }
+    );
+  }
 }
 
 export const distributionService = new DistributionService();

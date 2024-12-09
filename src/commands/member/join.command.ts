@@ -1,7 +1,12 @@
 import { Context } from 'telegraf';
 
-import { commandService, currentSeasonService, participantService } from '../../services';
+import {
+  commandService,
+  currentSeasonService,
+  participantService,
+} from '../../services';
 import { ParticipantJoinData } from '../../types';
+import { sanitizeForMarkdown } from '../../utils';
 
 // Define the structure of the steps for the command
 export const joinCommandSteps = [
@@ -62,8 +67,8 @@ export const joinCommandSteps = [
         await commandService.clearState(ctx.from.id); // Clear the state after completion
 
         ctx.reply(
-          `🎉 You have successfully joined the season as *"${participant.fullName}"*.`,
-          { parse_mode: 'Markdown' },
+          `🎉 You have successfully joined the season as *${sanitizeForMarkdown(participant.fullName)}*\\.`,
+          { parse_mode: 'MarkdownV2' },
         );
       } catch (error) {
         ctx.reply(`❌ ${(error as Error).message}`);
@@ -93,14 +98,14 @@ export const joinHandler = async (ctx: Context) => {
     if (!state) {
       await commandService.setState(userId, 'join');
       await ctx.reply(
-        joinCommandSteps[0].message,
-        { parse_mode: 'Markdown' },
+        sanitizeForMarkdown(joinCommandSteps[0].message),
+        { parse_mode: 'MarkdownV2' },
       );
     } else {
       // If the user has a state, handle the steps
       await ctx.reply(
-        joinCommandSteps[state.step].message,
-        { parse_mode: 'Markdown' },
+        sanitizeForMarkdown(joinCommandSteps[state.step].message),
+        { parse_mode: 'MarkdownV2' },
       );
     }
   } catch (error) {

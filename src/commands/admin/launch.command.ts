@@ -30,7 +30,7 @@ export const launchSeasonCommandSteps = [
   }
 ];
 
-export const launchSeasonHandler = async (ctx: Context) => {
+export const launchCurrentSeasonHandler = async (ctx: Context) => {
   if (!isAdmin(ctx.from?.id)) {
     return ctx.reply('❌ You do not have permission to execute this command.');
   }
@@ -41,7 +41,7 @@ export const launchSeasonHandler = async (ctx: Context) => {
 
   // If the user doesn't have a state, set it
   if (!state) {
-    await commandService.setState(userId, 'launch_season');
+    await commandService.setState(userId, 'launch_current_season');
     await ctx.reply(launchSeasonCommandSteps[0].message);
   } else {
     // If the user has a state, handle the steps
