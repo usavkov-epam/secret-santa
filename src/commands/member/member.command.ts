@@ -34,3 +34,23 @@ export const myRecipientHandler = async (ctx: Context) => {
     ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
+
+/**
+ * Shows the user's profile link.
+ */
+export const myLinkHandler = async (ctx: Context) => {
+  if (!ctx.from?.username) {
+    return ctx.reply('❌ Could not find your username.');
+  }
+
+  try {
+    const link = await participantService.getLink(ctx.from?.username);
+
+    ctx.reply(
+      `Your profile link: \`${link}\`.`,
+      { parse_mode: 'Markdown' },
+    );
+  } catch (error) {
+    ctx.reply(`❌ ${(error as Error).message}`);
+  }
+}

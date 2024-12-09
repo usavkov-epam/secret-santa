@@ -171,6 +171,80 @@ class ParticipantService {
   async checkIfParticipantExists(username: string) {
     return ParticipantModel.exists({ username });
   }
+
+  /*
+   * Get wish by username 
+   */
+  async getWish(username: string) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    const participant = await ParticipantModel.findOne({
+      seasonId: currentSeason.season._id,
+      username,
+    });
+
+    if (!participant) {
+      throw new Error('Participant not found.');
+    }
+
+    return participant.wish;
+  }
+
+  /*
+   * Update wish by username
+  */
+  async updateWish(username: string, wish: string) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    if (currentSeason.season.status === SeasonStatus.Frozen) {
+      throw new Error('Secret Santa registration has ended and the draw stage began.');
+    }
+
+    const participant = await ParticipantModel.findOne({
+      seasonId: currentSeason.season._id,
+      username,
+    });
+
+    if (!participant) {
+      throw new Error('Participant not found.');
+    }
+
+    participant.wish = wish;
+
+    await participant.save();
+
+    return participant;
+  }
+
+  /**
+   * Get link by username
+   */
+  async getLink(username: string) {
+    const currentSeason = await currentSeasonService.getCurrentSeason();
+
+    if (!currentSeason) {
+      throw new Error('No active season found.');
+    }
+
+    const participant = await ParticipantModel.findOne({
+      seasonId: currentSeason.season._id,
+      username,
+    });
+
+    if (!participant) {
+      throw new Error('Participant not found.');
+    }
+
+    return participant.sharedLink;
+  }
 }
 
 export const participantService = new ParticipantService();

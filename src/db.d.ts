@@ -9,6 +9,8 @@ export interface Participant {
   fullName?: string;
   recipient?: Participant;
   seasonId: string;
+  wish: string;
+  sharedLink?: string;
 }
 
 export interface ParticipantDocument extends Document {
@@ -18,6 +20,8 @@ export interface ParticipantDocument extends Document {
   fullName: string;
   recipient?: Participant;
   seasonId: string;
+  wish: string;
+  sharedLink?: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -16,6 +16,7 @@ import {
 } from './info';
 import {
   handleJoinSteps,
+  handleUpdateWishSteps,
   registerMemberCommands,
 } from './member';
 
@@ -42,6 +43,10 @@ const registerCommands = (bot: Telegraf) => {
         }
         case 'launch_season': {
           await handleLaunchSeasonSteps(ctx, state);
+          break;
+        }
+        case 'update_wish': {
+          await handleUpdateWishSteps(ctx, state);
           break;
         }
       }

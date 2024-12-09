@@ -9,19 +9,26 @@ import {
   isAdmin,
 } from '../../utils';
 import { launchSeasonCommandSteps } from '../admin';
-import { joinCommandSteps } from '../member';
+import {
+  joinCommandSteps,
+  updateWishCommandSteps,
+} from '../member';
 import { supportCommandSteps } from './support.command';
 
 const commandsDict: any /* TODO: specify type */ = {
   'launch_season': launchSeasonCommandSteps,
   'support': supportCommandSteps,
   'join': joinCommandSteps,
+  'update_wish': updateWishCommandSteps,
 };
 
 const commonCommands = [
   '/join - Join the current season',
   '/leave - Leave the current season',
   '/recipient - See your recipient',
+  '/wish - See your wish',
+  '/update_wish - Update your wish',
+  '/shared_link - Get your profile link',
   '/support - Send a message to support team',
   '/help - Show helpful message',
   '/status - Show current season status',
