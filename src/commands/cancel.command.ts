@@ -5,6 +5,8 @@ import { commandService } from '../services';
 export const cancelHandler = async (ctx: Context) => {
   const userId = ctx.from?.id;
 
+  console.log('cancelHandler', userId, ctx.from?.username);
+
   if (userId) {
     const currentState = await commandService.getState(userId);
 

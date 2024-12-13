@@ -14,34 +14,51 @@ export const joinCommandSteps = [
     step: 0,
     message: 'Step 1: Please provide your full name (FirstName LastName).',
     action: async (ctx: any) => {
-      const currentState = await commandService.getState(ctx.from.id);
-      const updatedData = { ...currentState?.data, fullName: ctx.message.text };
+      console.log('fullName', ctx.message?.text, ctx.from?.id, ctx.from?.username);
 
-      await commandService.updateState(ctx.from.id, {
-        step: 1,
-        data: updatedData,
-      });
-      await ctx.reply(joinCommandSteps[1].message);
+      try {
+        const currentState = await commandService.getState(ctx.from.id);
+        const updatedData = { ...currentState?.data, fullName: ctx.message.text };
+
+        await commandService.updateState(ctx.from.id, {
+          step: 1,
+          data: updatedData,
+        });
+        await ctx.reply(joinCommandSteps[1].message);
+      } catch (error) {
+        console.log('error', error);
+        ctx.reply(`❌ ${(error as Error).message}`);
+      }
     },
   },
   {
     step: 1,
     message: 'Step 2: Describe your preferences for a gift.',
     action: async (ctx: any) => {
-      const currentState = await commandService.getState(ctx.from.id);
-      const updatedData = { ...currentState?.data, wish: ctx.message.text };
+      console.log('wish', ctx.message?.text, ctx.from?.id, ctx.from?.username);
 
-      await commandService.updateState(ctx.from.id, {
-        step: 2,
-        data: updatedData,
-      });
-      await ctx.reply(joinCommandSteps[2].message);
+      try {
+        const currentState = await commandService.getState(ctx.from.id);
+        const updatedData = { ...currentState?.data, wish: ctx.message.text };
+
+        await commandService.updateState(ctx.from.id, {
+          step: 2,
+          data: updatedData,
+        });
+        await ctx.reply(joinCommandSteps[2].message);
+      } catch (error) {
+        console.log('error', error);
+        ctx.reply(`❌ ${(error as Error).message}`);
+      }
     },
   },
   {
     step: 2,
-    message: 'Step 3: Please provide a link to your profile which help Secret Santa to get your lifestyle (e.g. Instagram, Facebook, etc.). Or /empty',
+    message:
+      'Step 3: Please provide a link to your profile which help Secret Santa to get your lifestyle (e.g. Instagram, Facebook, etc.). Or /empty',
     action: async (ctx: any) => {
+      console.log('sharedLink', ctx.message?.text, ctx.from?.id, ctx.from?.username);
+
       const currentState = await commandService.getState(ctx.from.id);
       const updatedData = {
         ...currentState?.data,
@@ -71,6 +88,7 @@ export const joinCommandSteps = [
           { parse_mode: 'MarkdownV2' },
         );
       } catch (error) {
+        console.log('error', error);
         ctx.reply(`❌ ${(error as Error).message}`);
       }
     },
@@ -81,6 +99,8 @@ export const joinCommandSteps = [
  * Joins the current season.
  */
 export const joinHandler = async (ctx: Context) => {
+  console.log('from', ctx.from, ctx.from?.id, ctx.from?.username);
+
   try {
     if (!(await currentSeasonService.getCurrentSeason())) {
       return ctx.reply('❌ No active season found.');
@@ -97,18 +117,17 @@ export const joinHandler = async (ctx: Context) => {
     // If the user doesn't have a state, set it
     if (!state) {
       await commandService.setState(userId, 'join');
-      await ctx.reply(
-        sanitizeForMarkdown(joinCommandSteps[0].message),
-        { parse_mode: 'MarkdownV2' },
-      );
+      await ctx.reply(sanitizeForMarkdown(joinCommandSteps[0].message), {
+        parse_mode: 'MarkdownV2',
+      });
     } else {
       // If the user has a state, handle the steps
-      await ctx.reply(
-        sanitizeForMarkdown(joinCommandSteps[state.step].message),
-        { parse_mode: 'MarkdownV2' },
-      );
+      await ctx.reply(sanitizeForMarkdown(joinCommandSteps[state.step].message), {
+        parse_mode: 'MarkdownV2',
+      });
     }
   } catch (error) {
+    console.log('error', error);
     ctx.reply(`❌ ${(error as Error).message}`);
   }
 };
