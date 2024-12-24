@@ -9,7 +9,10 @@ import {
   distributeRecipientAssignment,
 } from './distribute.command';
 import { launchCurrentSeasonHandler } from './launch.command';
-import { notifyParticipantsAboutAssignmentCommand } from './notify.command';
+import {
+  notifyParticipantsAboutAssignmentCommand,
+  notifyParticipantsAboutDeliveryCommand,
+} from './notify.command';
 import {
   addParticipantHandler,
   removeParticipantHandler,
@@ -32,6 +35,7 @@ export const registerAdminCommands = (bot: Telegraf) => {
   bot.command('distribute_participants', distributeRecipientAssignment);
   bot.command('clear_distribution', clearDistributionAssignment);
   bot.command('notify_assignment', notifyParticipantsAboutAssignmentCommand);
+  bot.command('notify_delivery', notifyParticipantsAboutDeliveryCommand);
 };
 
 export {

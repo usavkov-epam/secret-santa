@@ -52,6 +52,7 @@ const adminCommands = [
   '/distribute_participants - Distribute participants (admin)',
   '/clear_distribution - Clear distribution (admin)',
   '/notify_assignment - Notify participants about their assignment (admin)',
+  '/notify_delivery - Notify participants about gift delivery (admin)',
 ];
 
 /**
